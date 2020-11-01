@@ -8,9 +8,9 @@
 </head>
 <body>
     <script type="module">
-        import * as THREE from '../libs/threeJS/three.module.js';
-        import { OrbitControls } from '../libs/jsm/OrbitControls.js';
-        import { GLTFLoader } from '../libs/jsm/GLTFLoader.js'
+        import * as THREE from './libs/threeJS/three.module.js';
+        import { OrbitControls } from './libs/jsm/OrbitControls.js';
+        import { GLTFLoader } from './libs/jsm/GLTFLoader.js'
 
         var scene, camera, renderer;
         var mesh, model;
@@ -57,8 +57,8 @@
 
         function models()
         {
-            var texture = new THREE.TextureLoader().load("assets/images/bird-render.png");
-            var alphaTexture = new THREE.TextureLoader().load("assets/images/bird-colouring-book-alpha-2.png")
+            var texture = new THREE.TextureLoader().load("./assets/images/bird-render.png");
+            var alphaTexture = new THREE.TextureLoader().load("./assets/images/bird-colouring-book-alpha-2.png")
             texture.flipY = false;
             alphaTexture.flipY = false;
             var birdMaterial = new THREE.MeshBasicMaterial({
@@ -68,7 +68,7 @@
                 transparent : false,
                 side: THREE.DoubleSide});
 
-            const loader = new GLTFLoader().setPath("../assets/models/");
+            const loader = new GLTFLoader().setPath("./assets/models/");
             loader.load(
             "bird.glb",
             function(gltf)
