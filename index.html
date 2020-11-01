@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viewport</title>
+    <link rel ="stylesheet" href="css/main.css">
+</head>
+<body>
+    <script type="module">
+        import * as THREE from '../libs/threeJS/three.module.js';
+        import { OrbitControls } from '../libs/jsm/OrbitControls.js';
+        import { GLTFLoader } from '../libs/jsm/GLTFLoader.js'
+
+        var scene, camera, renderer;
+        var mesh, model;
+
+        init();
+        update();
+
+        function init()
+        {
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+            
+            renderer = new THREE.WebGLRenderer({antialias : true});
+            renderer.setClearColor(0xaaaaaa);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+        
+            // Resize
+            window.addEventListener("resize", onWindowResize);
+
+            controls();
+            lights();
+            models();
+        }
+
+        function controls()
+        {
+            var controls = new OrbitControls(camera,renderer.domElement);
+        }
+
+        function lights()
+        {
+                // Lights
+            var ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.3);
+            scene.add(ambient);
+
+            var light = new THREE.DirectionalLight();
+            light.position.set(0.2,1,1);
+            scene.add(light);
+        }
+
+        function models()
+        {
+            var texture = new THREE.TextureLoader().load("assets/images/bird-render.png");
+            var alphaTexture = new THREE.TextureLoader().load("assets/images/bird-colouring-book-alpha-2.png")
+            texture.flipY = false;
+            alphaTexture.flipY = false;
+            var birdMaterial = new THREE.MeshBasicMaterial({
+                map : texture, 
+                alphaMap : alphaTexture,
+                alphaTest : 0.5,
+                transparent : false,
+                side: THREE.DoubleSide});
+
+            const loader = new GLTFLoader().setPath("../assets/models/");
+            loader.load(
+            "bird.glb",
+            function(gltf)
+            {
+                model = gltf.scene.children[0];
+                model.name = "Bird";
+                model.scale.set(0.3,0.3,0.3);
+                model.traverse((o) => {
+                    if (o.isMesh) o.material = birdMaterial;
+                    });
+                scene.add(model);
+            },
+                // called while loading is progressing
+            function ( xhr ) 
+            {
+                console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+            },
+
+            // called when loading has errors
+            function ( error ) 
+            {
+                console.log( 'An error happened' );
+            }
+        )
+
+        }
+
+        function animate()
+        {
+            //model.rotation.y += 0.005;
+        }
+
+        function onWindowResize()
+        {
+            camera.aspect = window.innerWidth/window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function update()
+        {
+            requestAnimationFrame(update);
+
+            animate()
+
+            renderer.render(scene, camera);
+        }
+
+    </script>
+</body>
+</html>
